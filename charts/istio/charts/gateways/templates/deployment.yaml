@@ -119,7 +119,14 @@ spec:
           optional: true
       {{- end }}
       affinity:
-      {{- include "nodeaffinity" $ | indent 6 }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/infra
+                operator: In
+                values:
+                - infra
 ---
 {{- end }}
 {{- end }}
