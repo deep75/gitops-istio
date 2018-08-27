@@ -31,7 +31,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: podinfod
-          image: "{{ .Values.blue.repository }}:{{ .Values.blue.tag }}"
+          image: "{{ .Values.blue.image }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           command:
             - ./podinfo

@@ -4,7 +4,7 @@ metadata:
   name: frontend
   namespace: demo
   annotations:
-    flux.weave.works/automated: "true"
+    flux.weave.works/automated: "false"
     flux.weave.works/tag.blue: glob:1.0.0
     flux.weave.works/tag.green: glob:*
 spec:
@@ -16,15 +16,13 @@ spec:
 
     blue:
       replicas: 2
-      repository: quay.io/stefanprodan/podinfo
-      tag: "1.0.0"
+      image: quay.io/stefanprodan/podinfo:1.0.0
       message: "Greetings from the blue frontend"
       backend: http://backend:9898/api/echo
 
     green:
       replicas: 2
-      repository: quay.io/stefanprodan/podinfo
-      tag: "1.0.0"
+      image: quay.io/stefanprodan/podinfo:1.0.0
       routing:
         # target Safari
         - match:

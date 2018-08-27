@@ -16,14 +16,14 @@ gateway:
 # stable release
 blue:
   replicas: 2
-  tag: "1.0.0"
+  image: quay.io/stefanprodan/podinfo:1.0.0
   message: "Greetings human! Gabi is THE BEST!!!!"
   backend: http://backend:9898/api/echo
 
 # canary release
 green:
   replicas: 2
-  tag: "1.0.0"
+  image: quay.io/stefanprodan/podinfo:1.0.0
   routing:
     # target Safari
     - match:

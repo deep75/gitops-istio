@@ -11,12 +11,12 @@ spec:
 
     blue:
       replicas: 2
-      tag: "1.0.0"
+      image: quay.io/stefanprodan/podinfo:1.0.0
       backend: http://store:9898/api/echo
 
     green:
       replicas: 2
-      tag: "1.0.0"
+      image: quay.io/stefanprodan/podinfo:1.0.0
       routing:
         # target green callers
         - match:
