@@ -7,7 +7,7 @@ spec:
   chartGitPath: podinfo-istio
   releaseName: frontend
   values:
-    host: podinfo.weavedx.com
+    host: podinfo.istio.weavedx.com
     exposeHost: true
 
     blue:
