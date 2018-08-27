@@ -3,8 +3,9 @@ kind: FluxHelmRelease
 metadata:
   name: istio
   namespace: istio-system
-  labels:
-    chart: istio
+  metadata:
+    annotations:
+      flux.weave.works/ignore: "true"
 spec:
   chartGitPath: istio
   releaseName: istio
@@ -399,7 +400,7 @@ spec:
       prometheusEnabled: false
 
     grafana:
-      enabled: false
+      enabled: true
       replicaCount: 1
       image: grafana
       security:
@@ -426,7 +427,7 @@ spec:
           port: 32090
 
     servicegraph:
-      enabled: false
+      enabled: true
       replicaCount: 1
       image: servicegraph
       service:
@@ -452,7 +453,7 @@ spec:
       prometheusAddr: http://prometheus:9090
 
     tracing:
-      enabled: false
+      enabled: true
       provider: jaeger
       jaeger:
         hub: docker.io/jaegertracing
@@ -531,7 +532,7 @@ spec:
     # gateway must be updated by adding 'secretVolumes'. After the gateway
     # restart, DestinationRules can be created using the ACME-signed certificates.
     certmanager:
-      enabled: false
+      enabled: true
       hub: quay.io/jetstack
       tag: v0.3.1
       resources: {}
