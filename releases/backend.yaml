@@ -1,0 +1,25 @@
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: backend
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: backend
+  values:
+    host: backend
+
+    blue:
+      replicas: 2
+      tag: "1.0.0"
+      backend: http://store:9898/api/echo
+
+    green:
+      replicas: 2
+      tag: "1.0.0"
+      routing:
+        # target green callers
+        - match:
+          - sourceLabels:
+              color: green
+      backend: http://store:9898/api/echo

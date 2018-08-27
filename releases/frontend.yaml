@@ -1,0 +1,37 @@
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: frontend
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: frontend
+  values:
+    host: podinfo.weavedx.com
+    exposeHost: true
+
+    blue:
+      replicas: 2
+      repository: quay.io/stefanprodan/podinfo
+      tag: "1.0.0"
+      message: "Greetings from the blue frontend"
+      backend: http://backend:9898/api/echo
+
+    green:
+      replicas: 2
+      repository: quay.io/stefanprodan/podinfo
+      tag: "1.0.0"
+      routing:
+        # target Safari
+        - match:
+          - headers:
+              user-agent:
+                regex: "^(?!.*Chrome).*Safari.*"
+        # target API clients by version
+        - match:
+          - headers:
+              x-api-version:
+                regex: "^(v{0,1})0\\.6\\.([1-9]).*"
+      message: "Greetings from the green frontend"
+      backend: http://backend:9898/api/echo
+
