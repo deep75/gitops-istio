@@ -4,7 +4,7 @@ metadata:
   name: frontend
   namespace: demo
   annotations:
-    flux.weave.works/automated: "false"
+    flux.weave.works/automated: "true"
     flux.weave.works/tag.blue: glob:1.0.0
     flux.weave.works/tag.green: semver:~1.0
 spec:
