@@ -25,4 +25,4 @@ spec:
               color: green
       faults:
         delay: false
-        error: true
+        error: false
