@@ -18,7 +18,7 @@ spec:
     blue:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.0.0
-      message: "Greetings from the blue frontend"
+      message: "Hello Container Camp"
       backend: http://backend:9898/api/echo
 
     green:

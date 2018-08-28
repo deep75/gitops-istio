@@ -1,10 +1,10 @@
-# GitOps for Istio Canary Deployments
+# GitOps A/B Testing with Istio and Helm
 
 This is a step by step guide on how to set up a GitOps workflow for Istio with Weave Flux. 
 GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure 
 and workloads. In practice this means using `git push` instead of `kubectl create/apply` or `helm install/upgrade`.
 
-### Install Weave Flux with Helm
+### Install Weave Flux
 
 Add the Weave Flux chart repo:
 
@@ -53,7 +53,7 @@ create a **deploy key** with **write access** on your GitHub repository.
 Open GitHub and fork this repo, navigate to your fork, go to _Settings > Deploy keys_ click on _Add deploy key_, check 
 _Allow write access_, paste the Flux public key and click _Add key_.
 
-### Install Istio with Weave Flux
+### Install Istio
 
 The Flux Helm operator provides an extension to Weave Flux that automates Helm Chart releases for it.
 A Chart release is described through a Kubernetes custom resource named `FluxHelmRelease`.
