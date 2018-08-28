@@ -14,13 +14,14 @@ spec:
     blue:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.0.0
-      backend: https://httpbin.org/anything
+      #backend: https://httpbin.org/anything
       weight: 80
 
     green:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.0.0
-      backend: https://httpbin.org/anything
+      #backend: https://httpbin.org/anything
 
+    # allow external traffic
     externalServices:
       - httpbin.org
