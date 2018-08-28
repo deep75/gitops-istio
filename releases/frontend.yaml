@@ -23,7 +23,7 @@ spec:
 
     green:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.0.0
+      image: quay.io/stefanprodan/podinfo:1.0.1
       routing:
         # target Safari
       - match:
