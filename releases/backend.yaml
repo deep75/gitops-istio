@@ -17,9 +17,12 @@ spec:
     green:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.0.0
+      backend: http://store:9898/api/echo
       routing:
         # target green callers
         - match:
           - sourceLabels:
               color: green
-      backend: http://store:9898/api/echo
+      faults:
+        delay: true
+        error: true
