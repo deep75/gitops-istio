@@ -30,11 +30,11 @@ spec:
         - headers:
             user-agent:
               regex: "^(?!.*Chrome).*Safari.*"
-        # target API clients by version
+        # target API clients by version 1.0.1-1.0.9
       - match:
         - headers:
             x-api-version:
-              regex: "^(v{0,1})0\\.6\\.([1-9]).*"
+              regex: "^(v{0,1})1\\.0\\.([1-9]).*"
       message: "Greetings from the green frontend"
       backend: http://backend:9898/api/echo
 
