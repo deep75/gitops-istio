@@ -1,0 +1,18 @@
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: loadtest
+  namespace: test
+  annotations:
+    flux.weave.works/ignore: "false"
+spec:
+  chartGitPath: loadtest
+  releaseName: loadtest
+  values:
+    tests:
+      - name: "blue"
+        url: "https://podinfo.istio.weavedx.com/api/echo"
+        cmd: "-h2 -m POST -d '{test: 1}' -c 10 -q 10"
+      - name: "green"
+        url: "https://podinfo.istio.weavedx.com/api/echo"
+        cmd: "-h2 -m POST -d '{test: 2}' -H 'X-API-Version: 1.0.1' -c 5 -q 5"
