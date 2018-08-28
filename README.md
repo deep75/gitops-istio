@@ -74,159 +74,206 @@ spec:
   chartGitPath: istio
   releaseName: istio
   values:
-    rbacEnabled: true
-    mtls:
-      enabled: false
+    global:
+      nodePort: false
     ingress:
-      enabled: true
-    ingressgateway:
-      enabled: true
-    egressgateway:
-      enabled: true
+      enabled: false
     sidecarInjectorWebhook:
       enabled: true
+      enableNamespacesByDefault: false
+    gateways:
+      enabled: true
+    grafana:
+      enabled: true
+    prometheus:
+      enabled: true
+    servicegraph:
+      enabled: true
+    tracing:
+      enabled: true
+    certmanager:
+      enabled: true
 ```
 
-### Drive a canary deployment from git 
+### A/B Testing initial state
 
-Exec into `loadtest` pod and start the load test:
+![initial-state](diagrams/initial-state.png)
 
-```bash
-hey -n 1000000 -c 2 -q 5 http://podinfo.test:9898/version
-```
-
-**Initial state**
-
-All traffic is routed to the GA deployment:
+Frontend:
 
 ```yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
 metadata:
-  name: podinfo
-  namespace: test
+  name: frontend
+  namespace: demo
 spec:
-  hosts:
-  - podinfo
-  - podinfo.weavedx.com
-  gateways:
-  - mesh
-  - podinfo-gateway
-  http:
-  - route:
-#    - destination:
-#        host: podinfo
-#        subset: canary
-#      weight: 0
-    - destination:
-        host: podinfo
-        subset: ga
+  chartGitPath: podinfo-istio
+  releaseName: frontend
+  values:
+    host: podinfo.istio.weavedx.com
+    exposeHost: true
+
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      message: "Greetings from the blue frontend"
+      backend: http://backend:9898/api/echo
+
+    green:
+      # disabled (all traffic goes to blue)
+      replicas: 0
+```
+
+Backend:
+
+```yaml
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: backend
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: backend
+  values:
+    host: backend
+
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      backend: http://store:9898/api/echo
+
+    green:
+      # disabled (all traffic goes to blue)
+      replicas: 0
+```
+
+Data store:
+
+```yaml
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: store
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: store
+  values:
+    host: store
+
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
       weight: 100
+
+    green:
+      # disabled (all traffic goes to blue)
+      replicas: 0
 ```
 
-![s1](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s1.png)
+### A/B Testing desired state
 
-**Canary warm-up**
+![desired-state](diagrams/desired-state.png)
 
-Route 10% of the traffic to the canary deployment:
+Frontend:
 
 ```yaml
-  http:
-  - route:
-    - destination:
-        host: podinfo
-        subset: canary
-      weight: 10
-    - destination:
-        host: podinfo
-        subset: ga
-      weight: 90
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: frontend
+  namespace: demo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.blue: glob:1.0.0
+    flux.weave.works/tag.green: semver:~1.0
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: frontend
+  values:
+    # expose the frontend deployment outside the cluster
+    host: podinfo.istio.weavedx.com
+    exposeHost: true
+
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      message: "Greetings from the blue frontend"
+      backend: http://backend:9898/api/echo
+
+    green:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      routing:
+        # target Safari
+        - match:
+          - headers:
+              user-agent:
+                regex: "^(?!.*Chrome).*Safari.*"
+        # target API clients by version
+        - match:
+          - headers:
+              x-api-version:
+                regex: "^(v{0,1})1\\.0\\.([1-9]).*"
+      message: "Greetings from the green frontend"
+      backend: http://backend:9898/api/echo
 ```
 
-![s2](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s2.png)
-
-**Canary promotion**
-
-Increase the canary traffic to 60%:
+Backend:
 
 ```yaml
-  http:
-  - route:
-    - destination:
-        host: podinfo
-        subset: canary
-      weight: 60
-    - destination:
-        host: podinfo
-        subset: ga
-      weight: 40
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: backend
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: backend
+  values:
+    # expose the backend deployment inside the cluster on backend.demo
+    host: backend
+
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      backend: http://store:9898/api/echo
+
+    green:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      routing:
+        # target green callers
+        - match:
+          - sourceLabels:
+              color: green
+      backend: http://store:9898/api/echo
 ```
 
-![s3](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s3.png)
-
-Full promotion, 100% of the traffic to the canary:
+Data store:
 
 ```yaml
-  http:
-  - route:
-    - destination:
-        host: podinfo
-        subset: canary
-      weight: 100
-#    - destination:
-#        host: podinfo
-#        subset: ga
-#      weight: 0
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: store
+  namespace: demo
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: store
+  values:
+    # expose the store deployment inside the cluster on store.demo
+    host: store
+
+    # load balance 80/20 between blue and green
+    blue:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
+      weight: 80
+
+    green:
+      replicas: 2
+      image: quay.io/stefanprodan/podinfo:1.0.0
 ```
-
-![s4](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s4.png)
-
-Measure requests latency for each deployment:
-
-![s5](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s5.png)
- 
-Observe the traffic shift with Scope:
-
-![s0](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/screens/istio-c-s0.png)
-
-### Applying GitOps
-
-Prerequisites for automating Istio canary deployments:
-
-* create a cluster config Git repo that contains the desire state of your cluster
-* keep the GA and Canary deployment definitions in Git 
-* keep the Istio destination rule, virtual service and gateway definitions in Git
-* any changes to the above resources are performed via `git commit` instead of `kubectl apply`
-
-Assuming that the GA is version `0.1.0` and the Canary is at `0.2.0`, you would probably 
-want to automate the deployment of patches for 0.1.x and 0.2.x. 
-
-Using Weave Cloud you can define a GitOps pipeline that will continuously monitor for new patches 
-and will apply them on both GA and Canary deployments using Weave Flux filters:
-
-* `0.1.*` for GA
-* `0.2.*` for Canary
-
-Let's assume you've found a performance issue on the Canary by monitoring the request latency graph, for 
-some reason the Canary is responding slower than the GA. 
-
-CD GitOps pipeline steps:
-
-* An engineer fixes the latency issue and cuts a new release by tagging the master branch as 0.2.1
-* GitHub notifies GCP Container Builder that a new tag has been committed
-* GCP Container Builder builds the Docker image, tags it as 0.2.1 and pushes it to Google Container Registry
-* Weave Flux detects the new tag on GCR and updates the Canary deployment definition
-* Weave Flux commits the Canary deployment definition to GitHub in the cluster repo
-* Weave Flux triggers a rolling update of the Canary deployment
-* Weave Cloud sends a Slack notification that the 0.2.1 patch has been released 
-
-Once the Canary is fixed you can keep increasing the traffic shift from GA by modifying the weight setting 
-and committing the changes in Git. Weave Cloud will detect that the cluster state is out of sync with 
-desired state described in git and will apply the changes. 
-
-If you notice that the Canary doesn't behave well under load you can revert the changes in Git and 
-Weave Flux will undo the weight settings by applying the desired state from Git on the cluster.
-
-Keep iterating on the Canary code until the SLA is on a par with the GA release. 
-
-
