@@ -4,7 +4,7 @@ metadata:
   name: loadtest
   namespace: test
   annotations:
-    flux.weave.works/ignore: "false"
+    flux.weave.works/ignore: "true"
 spec:
   chartGitPath: loadtest
   releaseName: loadtest
