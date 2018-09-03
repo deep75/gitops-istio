@@ -11,6 +11,8 @@ spec:
   values:
     global:
       nodePort: false
+      proxy:
+        includeIPRanges: "10.28.0.0/14,10.7.240.0/20"
 
     ingress:
       enabled: false
