@@ -15,13 +15,6 @@ spec:
         flux.weave.works/automated: "true"
         flux.weave.works/tag.podinfod: glob:1*
     spec:
-      initContainers:
-        - name: podinfoinit
-          image: quay.io/stefanprodan/podinfo:1.0.0
-          command:
-            - /bin/sh
-            - -c
-            - sleep 1
       containers:
       - name: podinfod
         image: quay.io/stefanprodan/podinfo:1.0.0
