@@ -13,7 +13,7 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
         flux.weave.works/automated: "true"
-        flux.weave.works/tag.podinfod: glob:1*
+        flux.weave.works/tag.podinfod: semver:~1.0
     spec:
       containers:
       - name: podinfod
