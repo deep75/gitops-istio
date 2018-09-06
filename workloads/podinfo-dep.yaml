@@ -6,7 +6,6 @@ metadata:
   namespace: default
   annotations:
     flux.weave.works/automated: "true"
-    flux.weave.works/tag.podinfoinit: semver:>1.0.0
     flux.weave.works/tag.podinfod: semver:>1.0.0
 spec:
   replicas: 1
@@ -20,13 +19,6 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
     spec:
-      initContainers:
-      - name: podinfoinit
-        image: quay.io/stefanprodan/podinfo:1.0.0
-        command:
-          - /bin/sh
-          - -c
-          - sleep 1
       containers:
       - name: podinfod
         image: quay.io/stefanprodan/podinfo:1.0.0
