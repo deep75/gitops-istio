@@ -12,8 +12,9 @@ spec:
         app: podinfo
       annotations:
         prometheus.io/scrape: 'true'
-        flux.weave.works/tag.podinfoinit: semver:~1.0
-        flux.weave.works/tag.podinfod: semver:~1.0
+        flux.weave.works/automated: "true"
+        flux.weave.works/tag.podinfoinit: glob:1*
+        flux.weave.works/tag.podinfod: glob:develop-*
     spec:
       initContainers:
         - name: podinfoinit
