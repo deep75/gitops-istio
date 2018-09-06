@@ -1,20 +1,24 @@
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: podinfo
   namespace: default
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.podinfoinit: glob:develop-*
+    flux.weave.works/tag.podinfod: glob:develop-*
 spec:
-  replicas: 1
+    replicas: 1
+  selector:
+    matchLabels:
+      app: podinfo
   template:
     metadata:
       labels:
         app: podinfo
       annotations:
         prometheus.io/scrape: 'true'
-        flux.weave.works/automated: "true"
-        flux.weave.works/tag.podinfoinit: glob:develop-*
-        flux.weave.works/tag.podinfod: glob:develop-*
     spec:
       initContainers:
       - name: podinfoinit
