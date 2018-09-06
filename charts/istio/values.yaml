@@ -6,7 +6,7 @@ global:
   hub: docker.io/istio
 
   # Default tag for Istio images.
-  tag: 1.0.0
+  tag: 1.1.0.snapshot.0
 
   # Gateway used for legacy k8s Ingress resources. By default it is
   # using 'istio:ingress', to match 0.8 config. It requires that
@@ -95,6 +95,8 @@ global:
 
   # ImagePullSecrets for all ServiceAccount, list of secrets in the same namespace
   # to use for pulling any images in pods that reference this ServiceAccount.
+  # For components that don't use ServiceAccounts (i.e. grafana, servicegraph, tracing)
+  # ImagePullSecrets will be added to the corresponding Deployment(StatefulSet) objects.
   # Must be set for any clustser configured with privte docker registry.
   imagePullSecrets:
     # - private-registry-key
@@ -203,6 +205,7 @@ gateways:
       #  memory: 256Mi
 
     loadBalancerIP: ""
+    loadBalancerSourceRanges: {}
     serviceAnnotations: {}
     type: LoadBalancer #change to NodePort, ClusterIP or LoadBalancer if need be
 
@@ -226,8 +229,9 @@ gateways:
     - port: 8060
       targetPort: 8060
       name: tcp-citadel-grpc-tls
-    # Telemetry-related ports are enabled in gateway - but will only redirect if
-    # the gateway configration for the various components are enabled.
+    - port: 853
+      targetPort: 853
+      name: tcp-dns-tls
     - port: 15030
       targetPort: 15030
       name: http2-prometheus
@@ -253,60 +257,60 @@ gateways:
     serviceAnnotations: {}
     type: ClusterIP #change to NodePort or LoadBalancer if need be
     ports:
-      - port: 80
-        name: http2
-      - port: 443
-        name: https
+    - port: 80
+      name: http2
+    - port: 443
+      name: https
     secretVolumes:
-      - name: egressgateway-certs
-        secretName: istio-egressgateway-certs
-        mountPath: /etc/istio/egressgateway-certs
-      - name: egressgateway-ca-certs
-        secretName: istio-egressgateway-ca-certs
-        mountPath: /etc/istio/egressgateway-ca-certs
+    - name: egressgateway-certs
+      secretName: istio-egressgateway-certs
+      mountPath: /etc/istio/egressgateway-certs
+    - name: egressgateway-ca-certs
+      secretName: istio-egressgateway-ca-certs
+      mountPath: /etc/istio/egressgateway-ca-certs
 
   # Mesh ILB gateway creates a gateway of type InternalLoadBalancer,
   # for mesh expansion. It exposes the mtls ports for Pilot,CA as well
   # as non-mtls ports to support upgrades and gradual transition.
   istio-ilbgateway:
-      enabled: false
-      labels:
-        app: istio-ilbgateway
-        istio: ilbgateway
-      replicaCount: 1
-      autoscaleMin: 1
-      autoscaleMax: 5
-      resources:
-        requests:
-          cpu: 800m
-          memory: 512Mi
-        #limits:
-        #  cpu: 1800m
-        #  memory: 256Mi
-      loadBalancerIP: ""
-      serviceAnnotations:
-        cloud.google.com/load-balancer-type: "internal"
-      type: LoadBalancer
-      ports:
-      ## You can add custom gateway ports - google ILB default quota is 5 ports,
-      - port: 15011
-        name: grpc-pilot-mtls
-      # Insecure port - only for migration from 0.8. Will be removed in 1.1
-      - port: 15010
-        name: grpc-pilot
-      - port: 8060
-        targetPort: 8060
-        name: tcp-citadel-grpc-tls
-      # Port 5353 is forwarded to kube-dns
-      - port: 5353
-        name: tcp-dns
-      secretVolumes:
-      - name: ilbgateway-certs
-        secretName: istio-ilbgateway-certs
-        mountPath: /etc/istio/ilbgateway-certs
-      - name: ilbgateway-ca-certs
-        secretName: istio-ilbgateway-ca-certs
-        mountPath: /etc/istio/ilbgateway-ca-certs
+    enabled: false
+    labels:
+      app: istio-ilbgateway
+      istio: ilbgateway
+    replicaCount: 1
+    autoscaleMin: 1
+    autoscaleMax: 5
+    resources:
+      requests:
+        cpu: 800m
+        memory: 512Mi
+      #limits:
+      #  cpu: 1800m
+      #  memory: 256Mi
+    loadBalancerIP: ""
+    serviceAnnotations:
+      cloud.google.com/load-balancer-type: "internal"
+    type: LoadBalancer
+    ports:
+    ## You can add custom gateway ports - google ILB default quota is 5 ports,
+    - port: 15011
+      name: grpc-pilot-mtls
+    # Insecure port - only for migration from 0.8. Will be removed in 1.1
+    - port: 15010
+      name: grpc-pilot
+    - port: 8060
+      targetPort: 8060
+      name: tcp-citadel-grpc-tls
+    # Port 5353 is forwarded to kube-dns
+    - port: 5353
+      name: tcp-dns
+    secretVolumes:
+    - name: ilbgateway-certs
+      secretName: istio-ilbgateway-certs
+      mountPath: /etc/istio/ilbgateway-certs
+    - name: ilbgateway-ca-certs
+      secretName: istio-ilbgateway-ca-certs
+      mountPath: /etc/istio/ilbgateway-ca-certs
 
 
 #
@@ -350,9 +354,15 @@ mixer:
     cpu:
       targetAverageUtilization: 80
 
+  podAnnotations: {}
+
   prometheusStatsdExporter:
     hub: docker.io/prom
     tag: v0.6.0
+
+    # Configuration to be included as the statsd_exporter mapping configuration.
+    # See https://github.com/prometheus/statsd_exporter/tree/master#metric-mapping-and-configuration
+    mapping: {}
 
 #
 # pilot configuration
@@ -370,6 +380,9 @@ pilot:
     requests:
       cpu: 500m
       memory: 2048Mi
+  env:
+    PILOT_PUSH_THROTTLE_COUNT: 100
+    GODEBUG: gctrace=2
 
 #
 # security configuration
@@ -378,6 +391,7 @@ security:
   replicaCount: 1
   image: citadel
   selfSigned: true # indicate if self-signed CA is used.
+  identityDomain: cluster.local # indicate the domain used in SPIFFE identity URL
 
 #
 # addons configuration
@@ -391,6 +405,8 @@ grafana:
   enabled: false
   replicaCount: 1
   image: grafana
+  persist: false
+  storageClassName: ""
   security:
     enabled: false
     adminUser: admin
@@ -401,6 +417,8 @@ grafana:
     type: ClusterIP
     externalPort: 3000
     internalPort: 3000
+    loadBalancerIP:
+    loadBalancerSourceRanges:
 
 prometheus:
   enabled: true
@@ -424,6 +442,8 @@ servicegraph:
     type: ClusterIP
     externalPort: 8088
     internalPort: 8088
+    loadBalancerIP:
+    loadBalancerSourceRanges:
   ingress:
     enabled: false
     # Used to create an Ingress record.
@@ -445,7 +465,7 @@ tracing:
   provider: jaeger
   jaeger:
     hub: docker.io/jaegertracing
-    tag: 1.5
+    tag: 1.6
     memory:
       max_traces: 50000
     ui:
@@ -503,11 +523,10 @@ kiali:
       #   hosts:
       #     - kiali.local
   dashboard:
-    username: admin
-    # Default admin passphrase for kiali. Must be set during setup, and
-    # changed by overriding the secret
-    passphrase: admin
-
+    secretName: kiali
+    usernameKey: username
+    passphraseKey: passphrase
+    
     # Override the automatically detected Grafana URL, usefull when Grafana service has no ExternalIPs
     # grafanaURL:
 

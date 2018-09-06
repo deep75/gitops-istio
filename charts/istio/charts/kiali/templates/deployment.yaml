@@ -5,9 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app: kiali
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- template "common_labels" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -43,13 +41,13 @@ spec:
         - name: SERVER_CREDENTIALS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: kiali
-              key: username
+              name: {{ .Values.dashboard.secretName }}
+              key: {{ .Values.dashboard.usernameKey }}
         - name: SERVER_CREDENTIALS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: kiali
-              key: passphrase
+              name: {{ .Values.dashboard.secretName }}
+              key: {{ .Values.dashboard.passphraseKey }}
         - name: PROMETHEUS_SERVICE_URL
           value: http://prometheus:9090
 {{- if .Values.dashboard.grafanaURL }}

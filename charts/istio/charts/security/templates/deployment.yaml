@@ -6,10 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "security.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
     istio: citadel
+    {{- template "common_labels" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
@@ -33,6 +31,7 @@ spec:
             - --grpc-port=8060
             - --grpc-hostname=citadel
             - --citadel-storage-namespace={{ .Release.Namespace }}
+            - --custom-dns-names=istio-pilot-service-account.{{ .Release.Namespace }}:istio-pilot.{{ .Release.Namespace }}
           {{- if .Values.selfSigned }}
             - --self-signed-ca=true
           {{- else }}
@@ -41,6 +40,9 @@ spec:
             - --signing-key=/etc/cacerts/ca-key.pem
             - --root-cert=/etc/cacerts/root-cert.pem
             - --cert-chain=/etc/cacerts/cert-chain.pem
+          {{- end }}
+          {{- if .Values.identityDomain }}
+            - --identity-domain={{ .Values.identityDomain }}
           {{- end }}
           resources:
 {{- if .Values.resources }}
