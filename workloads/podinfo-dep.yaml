@@ -12,7 +12,7 @@ spec:
         app: podinfo
       annotations:
         prometheus.io/scrape: 'true'
-        flux.weave.works/tag.podinfoinit: glob:develop-*
+        flux.weave.works/tag.podinfoinit: glob:1.0.*
         flux.weave.works/tag.podinfod: glob:develop-*
     spec:
       initContainers:
