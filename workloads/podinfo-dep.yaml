@@ -9,7 +9,7 @@ metadata:
     flux.weave.works/tag.podinfoinit: glob:develop-*
     flux.weave.works/tag.podinfod: glob:develop-*
 spec:
-    replicas: 1
+  replicas: 1
   selector:
     matchLabels:
       app: podinfo
