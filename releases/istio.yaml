@@ -3,8 +3,6 @@ kind: FluxHelmRelease
 metadata:
   name: istio
   namespace: istio-system
-  annotations:
-    flux.weave.works/ignore: "false"
 spec:
   chartGitPath: istio
   releaseName: istio
