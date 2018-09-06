@@ -1,3 +1,4 @@
+{{- if .Values.global.crds }}
 # {{ if or .Values.global.crds (semverCompare ">=2.10.0-0" .Capabilities.TillerVersion.SemVer) }}
 # these CRDs only make sense when pilot is enabled
 # {{- if .Values.pilot.enabled }}
@@ -1114,3 +1115,4 @@ spec:
 ---
 # {{- end }}
 # {{ end }}
+{{- end }}
