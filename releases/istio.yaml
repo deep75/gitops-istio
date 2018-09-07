@@ -37,4 +37,5 @@ spec:
 
     certmanager:
       enabled: true
+      tag: v0.4.1
 
