@@ -30,6 +30,7 @@ spec:
         image: quay.io/stefanprodan/podinfo:1.0.0
         command:
         - ./podinfo
+        - --port=9898
         ports:
         - name: http
           containerPort: 9898
