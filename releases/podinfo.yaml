@@ -13,4 +13,4 @@ spec:
   values:
     image:
       repository: quay.io/stefanprodan/podinfo
-      tag: 1.1.0
+      tag: 1.1.1
