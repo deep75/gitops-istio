@@ -22,13 +22,13 @@ spec:
     spec:
       initContainers:
       - name: init
-        image: quay.io/stefanprodan/podinfo:1.0.0
+        image: quay.io/stefanprodan/podinfo:1.2.0
         command:
         - ./podinfo
         - --version
       containers:
       - name: podinfod
-        image: quay.io/stefanprodan/podinfo:1.0.0
+        image: quay.io/stefanprodan/podinfo:1.0.1
         command:
         - ./podinfo
         - --port=9898
