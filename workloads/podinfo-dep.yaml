@@ -6,6 +6,8 @@ metadata:
   namespace: default
   annotations:
     flux.weave.works/automated: "true"
+    flux.weave.works/tag.init: glob:1.2*
+    flux.weave.works/tag.init: glob:1.0*
 spec:
   replicas: 1
   selector:
@@ -20,13 +22,13 @@ spec:
     spec:
       initContainers:
       - name: init
-        image: quay.io/stefanprodan/podinfo:1.2.0
+        image: quay.io/stefanprodan/podinfo:1.0.0
         command:
         - ./podinfo
         - --version
       containers:
       - name: podinfod
-        image: quay.io/stefanprodan/podinfo:1.2.0
+        image: quay.io/stefanprodan/podinfo:1.0.0
         command:
         - ./podinfo
         - --port=9898
