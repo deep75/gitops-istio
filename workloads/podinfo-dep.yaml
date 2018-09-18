@@ -7,7 +7,7 @@ metadata:
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.init: glob:1.2*
-    flux.weave.works/tag.init: glob:1.0*
+    flux.weave.works/tag.podinfod: glob:1.0*
 spec:
   replicas: 1
   selector:
