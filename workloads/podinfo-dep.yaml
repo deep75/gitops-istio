@@ -6,6 +6,7 @@ metadata:
   namespace: default
   annotations:
     flux.weave.works/automated: "true"
+    flux.weave.works/tag.init: semver:~2.0
     flux.weave.works/tag.podinfod: semver:~1.0
 spec:
   replicas: 1
