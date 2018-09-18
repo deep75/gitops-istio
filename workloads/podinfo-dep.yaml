@@ -25,7 +25,7 @@ spec:
         image: busybox:1.25
         command:
         - sleep
-        - 1
+        - "1"
       containers:
       - name: podinfod
         image: quay.io/stefanprodan/podinfo:1.0.1
