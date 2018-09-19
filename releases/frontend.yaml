@@ -6,8 +6,8 @@ metadata:
   namespace: demo
   annotations:
     flux.weave.works/automated: "true"
-    flux.weave.works/tag.blue: glob:1.0.0
-    flux.weave.works/tag.green: semver:~1.0
+    flux.weave.works/tag.blue: semver:~1.1
+    flux.weave.works/tag.green: semver:~1.2
 spec:
   chartGitPath: podinfo-istio
   releaseName: frontend
@@ -18,7 +18,7 @@ spec:
     blue:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.0.0
-      message: "Hello Container Camp"
+      message: "Greetings from the blue frontend"
       backend: http://backend:9898/api/echo
 
     green:

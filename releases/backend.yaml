@@ -3,6 +3,10 @@ kind: FluxHelmRelease
 metadata:
   name: backend
   namespace: demo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.blue: semver:~1.1
+    flux.weave.works/tag.green: semver:~1.2
 spec:
   chartGitPath: podinfo-istio
   releaseName: backend
