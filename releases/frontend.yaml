@@ -17,13 +17,13 @@ spec:
 
     blue:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.0.0
+      image: quay.io/stefanprodan/podinfo:1.1.1
       message: "Greetings from the blue frontend"
       backend: http://backend:9898/api/echo
 
     green:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.0.1
+      image: quay.io/stefanprodan/podinfo:1.2.0
       routing:
         # target Safari
       - match:

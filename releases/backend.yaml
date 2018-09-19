@@ -1,3 +1,4 @@
+---
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
 kind: FluxHelmRelease
 metadata:
@@ -15,18 +16,18 @@ spec:
 
     blue:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.0.0
+      image: quay.io/stefanprodan/podinfo:1.1.1
       backend: http://store:9898/api/echo
 
     green:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.0.0
+      image: quay.io/stefanprodan/podinfo:1.2.0
       backend: http://store:9898/api/echo
       routing:
         # target green callers
-        - match:
-          - sourceLabels:
-              color: green
+      - match:
+        - sourceLabels:
+            color: green
       faults:
         delay: false
         error: false
