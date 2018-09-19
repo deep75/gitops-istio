@@ -1,0 +1,27 @@
+apiVersion: config.istio.io/v1alpha2
+kind: denier
+metadata:
+  name: denyhandler
+  namespace: demo
+spec:
+  status:
+    code: 7
+    message: Not allowed
+---
+apiVersion: config.istio.io/v1alpha2
+kind: checknothing
+metadata:
+  name: denyrequest
+  namespace: demo
+spec:
+---
+apiVersion: config.istio.io/v1alpha2
+kind: rule
+metadata:
+  name: denystore
+  namespace: demo
+spec:
+  match:  source.labels["app"] == "store" && source.labels["app"] != "backend"
+  actions:
+  - handler: denyhandler.denier
+    instances: [ denyrequest.checknothing ]
