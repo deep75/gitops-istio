@@ -55,20 +55,20 @@ spec:
             - name: http
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: 9898
-            initialDelaySeconds: 1
-            periodSeconds: 2
-            failureThreshold: 1
           livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 9898
-            initialDelaySeconds: 1
-            periodSeconds: 10
-            failureThreshold: 2
+            exec:
+              command:
+              - podcli
+              - check
+              - http
+              - localhost:{{ .Values.containerPort }}/healthz
+          readinessProbe:
+            exec:
+              command:
+              - podcli
+              - check
+              - http
+              - localhost:{{ .Values.containerPort }}/readyz
           volumeMounts:
           - name: data
             mountPath: /data
