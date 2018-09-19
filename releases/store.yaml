@@ -3,13 +3,13 @@ kind: FluxHelmRelease
 metadata:
   name: store
   namespace: demo
-spec:
-  chartGitPath: podinfo-istio
-  releaseName: store
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.blue: semver:~1.1
     flux.weave.works/tag.green: semver:~1.2
+spec:
+  chartGitPath: podinfo-istio
+  releaseName: store
   values:
     # expose the store deployment inside the cluster on store.demo
     host: store
