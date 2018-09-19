@@ -5,9 +5,9 @@ metadata:
   namespace: demo
 spec:
   peers:
-  - mtls: {}
-#  - mtls:
-#      mode: PERMISSIVE
+#  - mtls: {}
+  - mtls:
+      mode: PERMISSIVE
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -19,4 +19,15 @@ spec:
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
-
+---
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: permissive
+  namespace: demo
+spec:
+  targets:
+  - name: frontend
+  peers:
+  - mtls:
+      mode: PERMISSIVE
