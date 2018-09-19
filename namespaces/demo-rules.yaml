@@ -21,7 +21,7 @@ metadata:
   name: denystore
   namespace: demo
 spec:
-  match:  source.labels["app"] == "store" && source.labels["app"] != "backend"
+  match:  destination.labels["app"] == "store" && source.labels["app"] != "backend"
   actions:
   - handler: denyhandler.denier
     instances: [ denyrequest.checknothing ]
