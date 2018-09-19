@@ -5,7 +5,8 @@ metadata:
   namespace: demo
 spec:
   peers:
-  - mtls: {}
+  - mtls:
+      mode: PERMISSIVE
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
