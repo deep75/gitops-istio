@@ -19,7 +19,7 @@ spec:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.1.1
       message: "Greetings from the blue frontend"
-      backend: http://backend:9898/api/echo
+      backend: http://backend.demo.svc.cluster.local:9898/api/echo
 
     green:
       replicas: 2
@@ -36,5 +36,5 @@ spec:
             x-api-version:
               regex: "^(v{0,1})1\\.0\\.([1-9]).*"
       message: "Greetings from the green frontend"
-      backend: http://backend:9898/api/echo
+      backend: http://backend.demo.svc.cluster.local:9898/api/echo
 

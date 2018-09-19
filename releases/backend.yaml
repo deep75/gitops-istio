@@ -17,12 +17,12 @@ spec:
     blue:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.1.1
-      backend: http://store:9898/api/echo
+      backend: http://store.demo.svc.cluster.local:9898/api/echo
 
     green:
       replicas: 2
       image: quay.io/stefanprodan/podinfo:1.2.0
-      backend: http://store:9898/api/echo
+      backend: http://store.demo.svc.cluster.local:9898/api/echo
       routing:
         # target green callers
       - match:
