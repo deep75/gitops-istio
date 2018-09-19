@@ -6,11 +6,10 @@ metadata:
   namespace: demo
   annotations:
     flux.weave.works/automated: "true"
-    flux.weave.works/tag.blue: semver:~1.1
 spec:
   chartGitPath: podinfo
   releaseName: podinfo
   values:
     image:
       repository: quay.io/stefanprodan/podinfo
-      tag: 1.1.1
+      tag: 1.2.0
