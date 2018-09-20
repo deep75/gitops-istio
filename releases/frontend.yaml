@@ -22,7 +22,7 @@ spec:
       backend: http://backend.demo.svc.cluster.local:9898/api/echo
 
     green:
-      replicas: 2
+      replicas: 0
       image: quay.io/stefanprodan/podinfo:1.2.0
       routing:
         # target Safari
