@@ -2,7 +2,7 @@ apiVersion: helm.integrations.flux.weave.works/v1alpha2
 kind: FluxHelmRelease
 metadata:
   name: loadtest
-  namespace: test
+  namespace: demo
   annotations:
     flux.weave.works/ignore: "true"
 spec:
