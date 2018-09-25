@@ -16,12 +16,12 @@ spec:
 
     blue:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.1.1
+      image: quay.io/stefanprodan/podinfo:1.2.0
       backend: http://backend.demo.svc.cluster.local:9898/api/echo
 
     green:
       replicas: 0
-      image: quay.io/stefanprodan/podinfo:1.2.1
+      image: quay.io/stefanprodan/podinfo:1.2.0
       routing:
         # target Safari
       - match:
