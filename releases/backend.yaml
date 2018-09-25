@@ -21,7 +21,7 @@ spec:
 
     green:
       replicas: 2
-      image: quay.io/stefanprodan/podinfo:1.2.0
+      image: quay.io/stefanprodan/podinfo:1.2.1
       backend: http://store.demo.svc.cluster.local:9898/api/echo
       routing:
         # target green callers
