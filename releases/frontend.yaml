@@ -5,6 +5,7 @@ metadata:
   name: frontend
   namespace: demo
   annotations:
+    flux.weave.works/automated: "false"
     flux.weave.works/tag.blue: semver:~1.1
     flux.weave.works/tag.green: semver:~1.2
 spec:
@@ -21,17 +22,17 @@ spec:
 
     green:
       replicas: 0
-      image: quay.io/stefanprodan/podinfo:1.1.1
+      image: quay.io/stefanprodan/podinfo:1.2.0
       routing:
         # target Safari
       - match:
         - headers:
             user-agent:
               regex: "^(?!.*Chrome).*Safari.*"
-        # target API clients by version 1.0.1-1.0.9
+        # target API clients by version
       - match:
         - headers:
             x-api-version:
-              regex: "^(v{0,1})1\\.0\\.([1-9]).*"
+              regex: "^(v{0,1})1\\.2\\.([0-9]).*"
       backend: http://backend.demo.svc.cluster.local:9898/api/echo
 
