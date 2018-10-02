@@ -20,7 +20,7 @@ spec:
     spec:
       initContainers:
       - name: init
-        image: busybox:1.29.3-uclibc
+        image: busybox:1.29.3-musl
         command:
         - sleep
         - "1"
