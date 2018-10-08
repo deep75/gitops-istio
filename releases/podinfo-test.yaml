@@ -8,5 +8,5 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-v2
   values:
-    replicaCount: 1
+    replicaCount: 2
     color: blue
