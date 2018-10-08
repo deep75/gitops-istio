@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+      - name: podinfod
+        image: quay.io/stefanprodan/podinfo:1.2.0
+        command:
+        - ./podinfo
+        - --port=9898
+        ports:
+        - name: http
+          containerPort: 9898
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - wget --quiet --tries=1 --spider http://localhost:9898/healthz || exit
+              1
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - wget --quiet --tries=1 --spider http://localhost:9898/readyz || exit
+              1
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
