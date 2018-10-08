@@ -2,11 +2,11 @@
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
 kind: FluxHelmRelease
 metadata:
-  name: podinfo-test
+  name: podinfo-v2
   namespace: default
 spec:
   chartGitPath: podinfo
-  releaseName: podinfo-test
+  releaseName: podinfo-v2
   values:
     replicaCount: 1
     color: blue
