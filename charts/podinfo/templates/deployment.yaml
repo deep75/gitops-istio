@@ -31,7 +31,7 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 40
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
