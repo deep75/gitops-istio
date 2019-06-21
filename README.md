@@ -25,7 +25,7 @@ You'll need a Kubernetes cluster **v1.11** or newer with `LoadBalancer` support,
 `MutatingAdmissionWebhook` and `ValidatingAdmissionWebhook` admission controllers enabled. 
 For testing purposes you can use Minikube with two CPUs and 4GB of memory. 
 
-Install Flux CLI, Helm and Tiller:
+Install Flux CLI, Helm and Tiller :
 
 ```bash
 brew install fluxctl kubernetes-helm
@@ -39,7 +39,7 @@ kubectl create clusterrolebinding tiller-cluster-rule \
 helm init --service-account tiller --wait
 ```
 
-Fork this repository and clone it:
+Fork this repository and clone it :
 
 ```bash
 git clone https://github.com/<YOUR-USERNAME>/gitops-istio
